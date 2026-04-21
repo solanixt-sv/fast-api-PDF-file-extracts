@@ -133,36 +133,43 @@ html, body, [data-testid="stAppViewContainer"] {
     background: transparent !important;
 }
 
+/* Hide ALL labels and redundant text that cause overlapping */
+[data-testid="stFileUploader"] label, 
+[data-testid="stFileUploader"] [data-testid="stWidgetLabel"] {
+    display: none !important;
+}
+
 /* Outer drop zone */
 [data-testid="stFileUploader"] > div,
 [data-testid="stFileUploader"] section {
-    background: rgba(10,10,20,0.85) !important;
-    border: 1.5px dashed rgba(99,102,241,0.5) !important;
-    border-radius: 16px !important;
-    padding: 2rem !important;
-    transition: all 0.3s ease !important;
-    backdrop-filter: blur(12px) !important;
+    background: rgba(10,10,24,0.7) !important;
+    border: 1.5px dashed rgba(99,102,241,0.4) !important;
+    border-radius: 20px !important;
+    padding: 3rem 1.5rem !important;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    backdrop-filter: blur(15px) !important;
+    box-shadow: inset 0 0 40px rgba(0,0,0,0.2) !important;
 }
 
 [data-testid="stFileUploader"] > div:hover,
 [data-testid="stFileUploader"] section:hover {
-    border-color: rgba(99,102,241,0.9) !important;
-    background: rgba(99,102,241,0.07) !important;
+    border-color: #6366f1 !important;
+    background: rgba(99,102,241,0.08) !important;
+    box-shadow: 0 0 30px rgba(99,102,241,0.15) !important;
 }
 
-/* Label above uploader */
-[data-testid="stFileUploader"] label,
-[data-testid="stFileUploader"] label p {
-    color: #94a3b8 !important;
-    font-size: 0.9rem !important;
-    font-family: 'Inter', sans-serif !important;
-}
-
-/* "Drag and drop" main text */
+/* "Drag and drop" main text - cleaned up */
 [data-testid="stFileUploader"] span,
 [data-testid="stFileUploader"] p {
-    color: #cbd5e1 !important;
+    color: #94a3b8 !important;
     font-family: 'Inter', sans-serif !important;
+    font-size: 0.95rem !important;
+}
+
+/* Make actual filename more visible */
+[data-testid="stFileUploader"] [class*="uploadedFileName"] {
+    color: #e2e8f0 !important;
+    font-weight: 600 !important;
 }
 
 /* "Limit X MB" small text */
@@ -199,23 +206,24 @@ html, body, [data-testid="stAppViewContainer"] {
 /* ── Button ── */
 .stButton > button {
     width: 100% !important;
-    background: linear-gradient(135deg, #6366f1, #8b5cf6) !important;
+    background: linear-gradient(135deg, #6366f1, #a855f7) !important;
     color: white !important;
     border: none !important;
-    border-radius: 14px !important;
-    padding: 0.85rem 2rem !important;
-    font-size: 1rem !important;
-    font-weight: 600 !important;
+    border-radius: 16px !important;
+    padding: 1rem 2rem !important;
+    font-size: 1.1rem !important;
+    font-weight: 700 !important;
     font-family: 'Inter', sans-serif !important;
-    letter-spacing: 0.02em !important;
+    letter-spacing: -0.01em !important;
     cursor: pointer !important;
-    transition: all 0.25s ease !important;
-    box-shadow: 0 4px 24px rgba(99,102,241,0.35) !important;
+    transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+    box-shadow: 0 10px 15px -3px rgba(99,102,241, 0.3), 0 4px 6px -2px rgba(99,102,241, 0.05) !important;
 }
 
 .stButton > button:hover {
-    transform: translateY(-2px) !important;
-    box-shadow: 0 8px 32px rgba(99,102,241,0.55) !important;
+    transform: translateY(-4px) scale(1.02) !important;
+    box-shadow: 0 20px 25px -5px rgba(99,102,241, 0.4), 0 10px 10px -5px rgba(99,102,241, 0.1) !important;
+    background: linear-gradient(135deg, #4f46e5, #9333ea) !important;
 }
 
 .stButton > button:active {
