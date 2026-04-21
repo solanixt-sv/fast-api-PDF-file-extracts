@@ -14,6 +14,7 @@ from fastapi import FastAPI, File, UploadFile, HTTPException
 from fastapi.responses import JSONResponse
 import PyPDF2
 import io
+import traceback
 from datetime import datetime
 
 app = FastAPI(
@@ -72,6 +73,29 @@ def extract_text_from_pdf(file_bytes: bytes) -> dict:
                 "error": str(e),
             },
         )
+
+    # Handle encrypted / password-protected PDFs
+    if reader.is_encrypted:
+        try:
+            # Many PDFs use an empty password for owner-level restrictions
+            if not reader.decrypt(""):
+                raise HTTPException(
+                    status_code=400,
+                    detail={
+                        "status": "error",
+                        "message": "The PDF is password-protected and cannot be read without a password.",
+                    },
+                )
+        except HTTPException:
+            raise
+        except Exception:
+            raise HTTPException(
+                status_code=400,
+                detail={
+                    "status": "error",
+                    "message": "The PDF is encrypted and could not be decrypted.",
+                },
+            )
 
     total_pages = len(reader.pages)
 
@@ -145,40 +169,57 @@ async def extract_pdf(file: UploadFile = File(..., description="Upload a PDF fil
     - `timestamp`: UTC timestamp of the request
     """
 
-    # ── Step 1: Validate file format ──────────────────────────
-    validate_pdf(file)
+    try:
+        # ── Step 1: Validate file format ──────────────────────────
+        validate_pdf(file)
 
-    # ── Step 2: Read file bytes ────────────────────────────────
-    file_bytes = await file.read()
+        # ── Step 2: Read file bytes ────────────────────────────────
+        file_bytes = await file.read()
 
-    # Guard against a completely null / zero-byte upload
-    if not file_bytes:
-        raise HTTPException(
-            status_code=400,
-            detail={
-                "status": "error",
-                "message": "The uploaded file is empty (0 bytes).",
+        # Guard against a completely null / zero-byte upload
+        if not file_bytes:
+            raise HTTPException(
+                status_code=400,
+                detail={
+                    "status": "error",
+                    "message": "The uploaded file is empty (0 bytes).",
+                    "filename": file.filename,
+                },
+            )
+
+        file_size = len(file_bytes)
+
+        # ── Step 3: Extract text ───────────────────────────────────
+        extraction = extract_text_from_pdf(file_bytes)
+
+        # ── Step 4: Build and return structured JSON response ──────
+        return JSONResponse(
+            status_code=200,
+            content={
+                "status": "success",
                 "filename": file.filename,
+                "file_size_bytes": file_size,
+                "extracted_text": extraction["extracted_text"],
+                "characters_extracted": extraction["characters_extracted"],
+                "total_pages": extraction["total_pages"],
+                "is_empty": extraction["is_empty"],
+                "note": extraction["note"],
+                "timestamp": datetime.utcnow().isoformat() + "Z",
             },
         )
 
-    file_size = len(file_bytes)
+    except HTTPException:
+        # Re-raise known HTTP exceptions so FastAPI handles them normally
+        raise
 
-    # ── Step 3: Extract text ───────────────────────────────────
-    extraction = extract_text_from_pdf(file_bytes)
-
-    # ── Step 4: Build and return structured JSON response ──────
-    return JSONResponse(
-        status_code=200,
-        content={
-            "status": "success",
-            "filename": file.filename,
-            "file_size_bytes": file_size,
-            "extracted_text": extraction["extracted_text"],
-            "characters_extracted": extraction["characters_extracted"],
-            "total_pages": extraction["total_pages"],
-            "is_empty": extraction["is_empty"],
-            "note": extraction["note"],
-            "timestamp": datetime.utcnow().isoformat() + "Z",
-        },
-    )
+    except Exception as e:
+        # Catch-all for unexpected errors — log the traceback and return JSON 500
+        traceback.print_exc()
+        return JSONResponse(
+            status_code=500,
+            content={
+                "status": "error",
+                "message": "An unexpected error occurred while processing the PDF.",
+                "detail": str(e),
+            },
+        )
