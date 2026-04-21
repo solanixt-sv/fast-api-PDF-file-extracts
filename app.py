@@ -128,27 +128,72 @@ html, body, [data-testid="stAppViewContainer"] {
     background: rgba(99,102,241,0.06);
 }
 
-/* ── Streamlit uploader override ── */
+/* ── Streamlit uploader override — full dark mode ── */
 [data-testid="stFileUploader"] {
     background: transparent !important;
 }
 
-[data-testid="stFileUploader"] > div {
-    background: rgba(255,255,255,0.03) !important;
+/* Outer drop zone */
+[data-testid="stFileUploader"] > div,
+[data-testid="stFileUploader"] section {
+    background: rgba(10,10,20,0.85) !important;
     border: 1.5px dashed rgba(99,102,241,0.5) !important;
     border-radius: 16px !important;
     padding: 2rem !important;
     transition: all 0.3s ease !important;
+    backdrop-filter: blur(12px) !important;
 }
 
-[data-testid="stFileUploader"] > div:hover {
-    border-color: rgba(99,102,241,0.85) !important;
-    background: rgba(99,102,241,0.06) !important;
+[data-testid="stFileUploader"] > div:hover,
+[data-testid="stFileUploader"] section:hover {
+    border-color: rgba(99,102,241,0.9) !important;
+    background: rgba(99,102,241,0.07) !important;
 }
 
-[data-testid="stFileUploader"] label {
+/* Label above uploader */
+[data-testid="stFileUploader"] label,
+[data-testid="stFileUploader"] label p {
     color: #94a3b8 !important;
     font-size: 0.9rem !important;
+    font-family: 'Inter', sans-serif !important;
+}
+
+/* "Drag and drop" main text */
+[data-testid="stFileUploader"] span,
+[data-testid="stFileUploader"] p {
+    color: #cbd5e1 !important;
+    font-family: 'Inter', sans-serif !important;
+}
+
+/* "Limit X MB" small text */
+[data-testid="stFileUploader"] small {
+    color: #475569 !important;
+}
+
+/* Browse files button inside uploader */
+[data-testid="stFileUploader"] button {
+    background: rgba(99,102,241,0.15) !important;
+    color: #a5b4fc !important;
+    border: 1px solid rgba(99,102,241,0.4) !important;
+    border-radius: 8px !important;
+    font-family: 'Inter', sans-serif !important;
+    font-weight: 500 !important;
+    transition: all 0.2s ease !important;
+}
+
+[data-testid="stFileUploader"] button:hover {
+    background: rgba(99,102,241,0.28) !important;
+    border-color: rgba(99,102,241,0.7) !important;
+    color: #c7d2fe !important;
+}
+
+/* Uploaded file chip / name row */
+[data-testid="stFileUploader"] [data-testid="stFileUploaderFile"],
+[data-testid="stFileUploader"] [class*="uploadedFile"] {
+    background: rgba(99,102,241,0.1) !important;
+    border: 1px solid rgba(99,102,241,0.25) !important;
+    border-radius: 10px !important;
+    color: #c7d2fe !important;
 }
 
 /* ── Button ── */
