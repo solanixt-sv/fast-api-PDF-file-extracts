@@ -1,14 +1,17 @@
-# Python
 __pycache__/
-*.py[cod]
-*$py.class
-venv/
+*.pyc
+*.pyo
+*.pyd
+.Python
 env/
-.env
-
-# Streamlit
-.streamlit/
-
-# OS
-.DS_Store
-Thumbs.db
+bin/
+lib/
+include/
+.venv/
+venv/
+PYVENV.CFG
+pip-selfcheck.json
+.vscode/
+.idea/
+*.pdf
+!test_sample.pdf
