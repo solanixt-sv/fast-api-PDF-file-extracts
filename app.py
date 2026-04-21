@@ -396,7 +396,7 @@ st.markdown("""
 uploaded_file = st.file_uploader(
     "Drop your PDF here or click to browse",
     type=["pdf"],
-    label_visibility="visible",
+    label_visibility="collapsed",
 )
 
 st.markdown("<div style='height:1rem'></div>", unsafe_allow_html=True)
