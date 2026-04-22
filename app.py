@@ -17,105 +17,167 @@ if not is_port_in_use(8000):
 # --------------------------
 
 st.set_page_config(
-    page_title="PDF Intelligence Extractor",
-    page_icon="📑",
+    page_title="PDF Intel - Professional Extraction",
+    page_icon="💼",
     layout="wide",
     initial_sidebar_state="expanded"
 )
 
-# Custom CSS for a premium look
+# Professional CSS
 st.markdown("""
     <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+    
+    html, body, [class*="css"] {
+        font-family: 'Inter', sans-serif;
+    }
+    
     .main {
-        background-color: #f8f9fa;
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
     }
+    
+    .stApp {
+        background: transparent;
+    }
+
+    /* Glassmorphism Card */
+    .glass-card {
+        background: rgba(255, 255, 255, 0.7);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border-radius: 15px;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        padding: 25px;
+        box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+        margin-bottom: 20px;
+    }
+    
     .stButton>button {
-        background: linear-gradient(90deg, #4b6cb7 0%, #182848 100%);
+        background: #1e3a8a;
         color: white;
+        border-radius: 10px;
+        height: 3em;
+        width: 100%;
+        font-weight: 700;
+        letter-spacing: 0.5px;
         border: none;
-        padding: 0.6rem 1rem;
-        border-radius: 8px;
-        font-weight: 600;
-        transition: all 0.3s ease;
+        box-shadow: 0 10px 15px -3px rgba(30, 58, 138, 0.3);
+        transition: all 0.2s ease;
     }
+    
     .stButton>button:hover {
+        background: #1e40af;
         transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        border: none;
+        box-shadow: 0 20px 25px -5px rgba(30, 58, 138, 0.4);
+    }
+
+    .metric-card {
+        background: white;
+        padding: 15px;
+        border-radius: 12px;
+        text-align: center;
+        border: 1px solid #e5e7eb;
+    }
+    
+    [data-testid="stSidebar"] {
+        background-color: #0f172a;
         color: white;
     }
-    .css-1kyxreq {
-        display: flex;
-        justify-content: center;
+    
+    [data-testid="stSidebar"] h1, [data-testid="stSidebar"] p, [data-testid="stSidebar"] li {
+        color: #f8fafc !important;
     }
-    .reportview-container .main .block-container {
-        max-width: 800px;
-    }
-    .extracted-box {
-        background-color: white;
-        padding: 2rem;
-        border-radius: 12px;
-        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-        border-left: 5px solid #4b6cb7;
-        margin-top: 1rem;
-    }
-    header {
-        visibility: hidden;
-    }
+    
+    header {visibility: hidden;}
     </style>
 """, unsafe_allow_html=True)
 
-st.title("📑 PDF Intelligence Extractor")
-st.markdown("---")
+# --- Sidebar ---
+with st.sidebar:
+    st.image("https://img.icons8.com/fluency/96/pdf.png", width=80)
+    st.title("Admin Panel")
+    st.markdown("---")
+    st.subheader("System Status")
+    if is_port_in_use(8000):
+        st.success("● AI Engine: Online")
+    else:
+        st.error("● AI Engine: Offline")
+    
+    st.markdown("---")
+    st.subheader("Project Info")
+    st.write("✅ **Fast Parsing**: Optimized for high speed.")
+    st.write("✅ **Secure**: In-memory processing.")
+    st.write("✅ **Clean**: Structured JSON outputs.")
+    st.info("System version: 1.2.0-stable")
 
-col_a, col_b = st.columns([1, 1])
+# --- Main Page ---
+st.title("💼 PDF Intelligence Dashboard")
+st.caption("Advanced document analysis and metadata extraction platform")
 
-with col_a:
-    st.subheader("Upload & Process")
-    st.info("Our AI-powered engine will extract key metadata and the first 200 characters from your PDF instantly.")
-    uploaded_file = st.file_uploader("Drop your PDF here", type=["pdf"])
+# Main Container
+main_col, side_col = st.columns([2, 1])
 
-with col_b:
-    st.subheader("Why use this?")
-    st.write("✅ **Fast Parsing**: Optimized for speed.")
-    st.write("✅ **Secure**: Files are processed in memory.")
-    st.write("✅ **Clean Metadata**: Get structured JSON responses.")
-# Use environment variable for API URL with a fallback for local development
-API_URL = os.getenv("API_URL", "http://127.0.0.1:8000/extract-pdf")
-
-if uploaded_file is not None:
-    if st.button("Extract Text"):
-        with st.spinner("Communicating with FastAPI backend..."):
-            try:
-                # Prepare the file for the POST request
-                files = {"file": (uploaded_file.name, uploaded_file.getvalue(), "application/pdf")}
-                
-                response = requests.post(API_URL, files=files)
-                
-                if response.status_code == 200:
-                    data = response.json()
-                    st.success("Extraction Successful!")
+with main_col:
+    st.markdown('<div class="glass-card">', unsafe_allow_html=True)
+    st.subheader("📤 Data Ingestion")
+    uploaded_file = st.file_uploader("Upload your PDF document for analysis", type=["pdf"], label_visibility="collapsed")
+    
+    if uploaded_file:
+        st.write(f"📂 Selected: **{uploaded_file.name}**")
+        if st.button("Process Document"):
+            API_URL = os.getenv("API_URL", "http://127.0.0.1:8000/extract-pdf")
+            with st.spinner("Processing in progress..."):
+                try:
+                    files = {"file": (uploaded_file.name, uploaded_file.getvalue(), "application/pdf")}
+                    response = requests.post(API_URL, files=files)
                     
-                    st.subheader("Extracted Text Preview")
-                    extracted_text = data.get("extracted_text")
-                    if extracted_text:
-                        st.info(extracted_text)
+                    if response.status_code == 200:
+                        data = response.json()
+                        st.session_state.last_result = data
+                        st.balloons()
                     else:
-                        st.warning("No text could be extracted or the file is an image-based PDF.")
-                    
-                    st.divider()
-                    
-                    st.subheader("File & Metadata")
-                    col1, col2, col3 = st.columns(3)
-                    col1.metric("File Size (bytes)", data.get("file_size_bytes"))
-                    col2.metric("Total Pages", data.get("total_pages"))
-                    col3.metric("Chars Extracted", data.get("characters_extracted"))
-                    
-                    with st.expander("View Full API Raw Response"):
-                        st.json(data)
-                        
-                else:
-                    st.error(f"Error {response.status_code}: {response.json().get('detail', response.text)}")
-            
-            except requests.exceptions.ConnectionError:
-                st.error("🚨 Could not connect to the FastAPI backend! Please make sure it is running via `uvicorn main:app --reload` on port 8000.")
+                        st.error(f"Error {response.status_code}: {response.json().get('detail', 'Unknown error')}")
+                except Exception as e:
+                    st.error(f"🚨 Connection failed: {str(e)}")
+    st.markdown('</div>', unsafe_allow_html=True)
+
+# Display Results if available
+if 'last_result' in st.session_state:
+    data = st.session_state.last_result
+    
+    # Text Preview Area
+    st.markdown('<div class="glass-card">', unsafe_allow_html=True)
+    st.subheader("📑 Content Intelligence")
+    text = data.get("extracted_text")
+    if text:
+        st.markdown(f"> {text}")
+    else:
+        st.warning("No extractable text found in this document.")
+    st.markdown('</div>', unsafe_allow_html=True)
+
+    # Metrics Row
+    m1, m2, m3 = st.columns(3)
+    with m1:
+        st.markdown('<div class="metric-card">', unsafe_allow_html=True)
+        st.metric("Total Pages", data.get("total_pages"))
+        st.markdown('</div>', unsafe_allow_html=True)
+    with m2:
+        st.markdown('<div class="metric-card">', unsafe_allow_html=True)
+        st.metric("Char Count", data.get("characters_extracted"))
+        st.markdown('</div>', unsafe_allow_html=True)
+    with m3:
+        st.markdown('<div class="metric-card">', unsafe_allow_html=True)
+        st.metric("File Size", f"{data.get('file_size_bytes') / 1024:.1f} KB")
+        st.markdown('</div>', unsafe_allow_html=True)
+
+    with st.expander("🔍 View Raw JSON Intelligence"):
+        st.json(data)
+else:
+    with side_col:
+        st.markdown('<div class="glass-card">', unsafe_allow_html=True)
+        st.subheader("Getting Started")
+        st.write("1. Upload a PDF file in the left panel.")
+        st.write("2. Click 'Process Document'.")
+        st.write("3. View extracted text and metadata.")
+        st.image("https://img.icons8.com/ios/100/null/document--v1.png", width=80)
+        st.markdown('</div>', unsafe_allow_html=True)
