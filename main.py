@@ -12,6 +12,7 @@ Endpoint: POST /extract-pdf
 
 from fastapi import FastAPI, File, UploadFile, HTTPException
 from fastapi.responses import JSONResponse
+from fastapi.middleware.cors import CORSMiddleware
 import PyPDF2
 import io
 from datetime import datetime
@@ -20,6 +21,15 @@ app = FastAPI(
     title="PDF Text Extractor API",
     description="A FastAPI backend that accepts a PDF file, extracts the starting 200 characters, and returns a structured JSON response.",
     version="1.0.0",
+)
+
+# Enable CORS
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Allow all origins for now, can be restricted later
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 
